@@ -40,7 +40,7 @@
     }else if (serverType == DHRequestServerTypeBus){
         server = @"lp-bus-msc/";
     }
-    NSString *url = [NSString stringWithFormat:@"%@",INLINE_SEVER_URL];
+    NSString *url = [NSString stringWithFormat:@"%@",service];
     AFHTTPRequestOperationManager *manger = request;
     __block NSError *error = nil;
     if (methodType == DHRequestMethodTypeGet) {

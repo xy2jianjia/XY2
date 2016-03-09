@@ -9,6 +9,7 @@
 #import "DHSecondViewController.h"
 #import "DHHttpBusServer.h"
 #import "DHSecModel.h"
+#import "UIImageView+WebCache.h"
 @interface DHSecondViewController ()
 @property (nonatomic,strong) NSMutableArray *dataArr;
 @end
@@ -28,7 +29,7 @@ static NSString * const reuseIdentifier = @"Cell";
     
     self.dataArr = [NSMutableArray array];
     
-    [DHHttpBusServer asyncGetYANYUANListWithApi:nil parameters:nil method:DHRequestMethodTypeGet server:0 success:^(id result, NSInteger code) {
+    [DHHttpBusServer asyncGetYANYUANListWithApi:@"http://api5.lingte.cc/web/getmv" parameters:nil method:DHRequestMethodTypeGet server:0 success:^(id result, NSInteger code) {
         
         for (NSDictionary *dict in result) {
             DHSecModel *item = [[DHSecModel alloc]init];
@@ -65,21 +66,34 @@ static NSString * const reuseIdentifier = @"Cell";
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
+    [cell.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
     DHSecModel *item = [self.dataArr objectAtIndex:indexPath.item];
     UIImageView *imageV = [[UIImageView alloc]initWithFrame:cell.bounds];
 //    @"http://ent.hangzhou.com.cn/images/20080812/zym2008082536.jpg"
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:item.imgurl]];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            imageV.image = [UIImage imageWithData:data];
-        });
-    });
-    
-    // Configure the cell
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//        NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:item.imgurl]];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            imageV.image = [UIImage imageWithData:data];
+//        });
+//    });
+    [imageV sd_setImageWithURL:[NSURL URLWithString:item.imgurl] placeholderImage:[UIImage imageNamed:@"111.jpg"]];
+    UILabel *label = [[UILabel alloc]init];
+    label.frame = CGRectMake(0, CGRectGetMaxY(cell.bounds)-25, CGRectGetWidth(cell.bounds), 25);
+    label.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+    label.text = item.title;
+    label.font = [UIFont systemFontOfSize:12];
+    label.textColor = [UIColor whiteColor];
+    [imageV addSubview:label];
     [cell.contentView addSubview:imageV];
 //    cell.backgroundColor = [UIColor yellowColor];
     return cell;
 }
+
+
+-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    
+}
+
 
 #pragma mark <UICollectionViewDelegate>
 
